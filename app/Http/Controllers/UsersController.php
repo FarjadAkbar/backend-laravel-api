@@ -33,9 +33,11 @@ class UsersController extends Controller
             return response(['message' => ['These credentials do not match our records.']], 404);
         }
 
-        if (!$user->hasVerifiedEmail()) {
-            return response(['message' => ['Please verify your email first.']], 403);
-        }
+
+        // Valid user must be verified
+        // if (!$user->hasVerifiedEmail()) {
+        //     return response(['message' => ['Please verify your email first.']], 403);
+        // }
 
         $remember = $request->input('remember', false);
 
@@ -54,8 +56,9 @@ class UsersController extends Controller
 
         return response($response, 201);
     }
+    
 
-    public function store(Request $request)
+    public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',

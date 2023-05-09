@@ -11,36 +11,28 @@ class ArticelPrefrencesController extends Controller
 {
     $user = $request->user();
     $preferences = ArticelPrefrences::where('user_id', $user->id)->first();
-    return response()->json(['preferences' => $preferences]);
+    return $preferences;
 }
 
-      // Create a new article preference
-    public function store(Request $request)
-    {
-        $articlePreference = new ArticelPrefrences;
-
-        $articlePreference->user_id = $request->user_id;
-        $articlePreference->categories = json_encode($request->categories);
-        $articlePreference->sources = json_encode($request->sources);
-        $articlePreference->authors = json_encode($request->authors);
-
-        $articlePreference->save();
-
-        return response()->json([
-            'message' => 'Article preference created successfully',
-            'data' => $articlePreference
-        ], 201);
-    }
 
     // Update an existing article preference
     public function update(Request $request, $id)
     {
-        $articlePreference = ArticelPrefrences::find($id);
+        $articlePreference = ArticelPrefrences::where('user_id', $id)->first();
 
         if (!$articlePreference) {
+            $articlePreference = new ArticelPrefrences;
+            $articlePreference->user_id = $request->user_id;
+            $articlePreference->categories = json_encode($request->categories);
+            $articlePreference->sources = json_encode($request->sources);
+            $articlePreference->authors = json_encode($request->authors);
+
+            $articlePreference->save();
+
             return response()->json([
-                'message' => 'Article preference not found'
-            ], 404);
+                'message' => 'Article preference created successfully',
+                'data' => $articlePreference
+            ], 201);
         }
 
         $articlePreference->user_id = $request->user_id;

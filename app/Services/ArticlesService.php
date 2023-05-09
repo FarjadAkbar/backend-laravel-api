@@ -81,6 +81,8 @@ class ArticlesService
                         'author' => $result['author'] ?? '',
                         'url' => $result['url'],
                         'urlToImage' => $result['urlToImage'] ?? '',
+                        'date' => $result['publishedAt'],
+                        'source' => 'newapi'
                     ];
                 }
             }
@@ -99,6 +101,8 @@ class ArticlesService
                     'author' => $result['fields']['byline'],
                     'url' => $result['webUrl'],
                     'urlToImage' => $result['fields'],
+                    'date' => $result['webPublicationDate'],
+                    'source' => 'guardian'
                 ];
             }
         }
@@ -112,10 +116,12 @@ class ArticlesService
                     'title' => $result['headline']['main'],
                     'description' => $result['abstract'],
                     'source' => 'The New York Times',
-                    'category' => $result['section_name'],
+                    'category' => $result['section_name'] ?? '',
                     'author' => $result['byline']['original'],
                     'url' => $result['web_url'],
                     'urlToImage' => isset($result['multimedia'][0]['url']) ? 'https://www.nytimes.com/' . $result['multimedia'][0]['url'] : '',
+                    'date' => $result['pub_date'],
+                    'source' => 'nytime'
                 ];
             }
         }
