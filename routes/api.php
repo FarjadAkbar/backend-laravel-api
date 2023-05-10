@@ -19,14 +19,14 @@ Route::post('/forgot-password', [UsersController::class, 'forgotPassword']);
 Route::post('/reset-password', [UsersController::class, 'resetPassword']);
 
 
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [UsersController::class, 'logout']);
     Route::get('/user', [UsersController::class, 'show']);
     Route::put('/user/update', [UsersController::class, 'update']);
 
     Route::get('/user/prefrences', [ArticelPrefrencesController::class, 'index']);
     Route::put('/user/prefrences/{id}', [ArticelPrefrencesController::class, 'update']);
-    
+
     Route::get('/user/articles', [ArticlesController::class, 'index']);    
 });
 

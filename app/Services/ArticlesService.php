@@ -22,10 +22,10 @@ class ArticlesService
             'country' => 'us',
         ];
         if ($q !== null) {
-            $params['category'] = $q;
+            $params['category'] = implode('|', $q);
         }
         if ($author !== null) {
-            $params['sources'] = implode(',', $author);
+            // $params['sources'] = implode(',', $author);
         }
 
         return Http::get('https://newsapi.org/v2/top-headlines', $params)->json();
@@ -41,7 +41,7 @@ class ArticlesService
             $params['section'] = implode('|', $q);
         }
         if ($author !== null) {
-            $params['byline'] = implode('|', $author);
+            // $params['byline'] = implode('|', $author);
         }
         return Http::get('https://content.guardianapis.com/search', $params)->json();
     }
@@ -68,50 +68,64 @@ class ArticlesService
         $articles = [];
 
         // News API
-        if (!$sources || (in_array('newsapi', $sources) && !empty($categories))) {
+        if ($sources && in_array('newapi', $sources)) {
             $newsApiResponse = self::newsApi($categories, $authors);
-            if(isset($newsApiResponse['articles'])){
-                foreach ($newsApiResponse['articles'] as $result) {
-                    $articles[] = [
-                        'id' => $result['url'],
-                        'title' => $result['title'],
-                        'description' => $result['description'],
-                        'source' => 'BBC News',
-                        'category' => '',
-                        'author' => $result['author'] ?? '',
-                        'url' => $result['url'],
-                        'urlToImage' => $result['urlToImage'] ?? '',
-                        'date' => $result['publishedAt'],
-                        'source' => 'newapi'
-                    ];
-                }
+        } elseif (!$sources && !$categories && !$authors) {
+            $newsApiResponse = self::newsApi();
+        } 
+
+        if (isset($newsApiResponse['articles'])) {
+            foreach ($newsApiResponse['articles'] as $result) {
+                $articles[] = [
+                    'id' => $result['url'],
+                    'title' => $result['title'],
+                    'description' => $result['description'],
+                    'source' => 'BBC News',
+                    'category' => '',
+                    'author' => $result['author'] ?? '',
+                    'url' => $result['url'],
+                    'urlToImage' => $result['urlToImage'] ?? '',
+                    'date' => $result['publishedAt'],
+                    'source' => 'newapi'
+                ];
             }
         }
+
 
         // Guardian API
-        if (!$sources || in_array('guardian', $sources)) {
+        if ($sources && in_array('guardian', $sources)) {
             $guardianApiResponse = self::guardianApi($categories, $authors);
-            if(isset($guardianApiResponse['response']['results'])){
-                foreach ($guardianApiResponse['response']['results'] as $result) {
-                    $articles[] = [
-                        'id' => $result['id'],
-                        'title' => $result['webTitle'],
-                        'description' => $result['fields']['trailText'],
-                        'source' => 'The Guardian',
-                        'category' => $result['sectionName'],
-                        'author' => $result['fields']['byline'],
-                        'url' => $result['webUrl'],
-                        'urlToImage' => $result['fields'],
-                        'date' => $result['webPublicationDate'],
-                        'source' => 'guardian'
-                    ];
-                }
+        } elseif (!$sources && !$categories && !$authors) {
+            $guardianApiResponse = self::guardianApi();
+        } 
+          
+        if(isset($guardianApiResponse['response']['results'])){
+            foreach ($guardianApiResponse['response']['results'] as $result) {
+                $articles[] = [
+                    'id' => $result['id'],
+                    'title' => $result['webTitle'],
+                    'description' => $result['fields']['trailText'],
+                    'source' => 'The Guardian',
+                    'category' => $result['sectionName'],
+                    'author' => $result['fields']['byline'],
+                    'url' => $result['webUrl'],
+                    'urlToImage' => $result['fields'],
+                    'date' => $result['webPublicationDate'],
+                    'source' => 'guardian'
+                ];
             }
         }
+    
 
         // NYTimes API
-        if (!$sources || in_array('nytimes', $sources)) {
+        if ($sources && in_array('nytimes', $sources)) {
             $nytApiResponse = self::nytimesApi($categories, $authors);
+        } elseif (!$sources && !$categories && !$authors) {
+            $nytApiResponse = self::nytimesApi();
+        } 
+
+        
+        if (isset($nytApiResponse['response']['docs'])) {
             foreach ($nytApiResponse['response']['docs'] as $result) {
                 $articles[] = [
                     'id' => $result['_id'],
