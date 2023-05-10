@@ -91,19 +91,21 @@ class ArticlesService
         // Guardian API
         if (!$sources || in_array('guardian', $sources)) {
             $guardianApiResponse = self::guardianApi($categories, $authors);
-            foreach ($guardianApiResponse['response']['results'] as $result) {
-                $articles[] = [
-                    'id' => $result['id'],
-                    'title' => $result['webTitle'],
-                    'description' => $result['fields']['trailText'],
-                    'source' => 'The Guardian',
-                    'category' => $result['sectionName'],
-                    'author' => $result['fields']['byline'],
-                    'url' => $result['webUrl'],
-                    'urlToImage' => $result['fields'],
-                    'date' => $result['webPublicationDate'],
-                    'source' => 'guardian'
-                ];
+            if(isset($guardianApiResponse['response']['results'])){
+                foreach ($guardianApiResponse['response']['results'] as $result) {
+                    $articles[] = [
+                        'id' => $result['id'],
+                        'title' => $result['webTitle'],
+                        'description' => $result['fields']['trailText'],
+                        'source' => 'The Guardian',
+                        'category' => $result['sectionName'],
+                        'author' => $result['fields']['byline'],
+                        'url' => $result['webUrl'],
+                        'urlToImage' => $result['fields'],
+                        'date' => $result['webPublicationDate'],
+                        'source' => 'guardian'
+                    ];
+                }
             }
         }
 
