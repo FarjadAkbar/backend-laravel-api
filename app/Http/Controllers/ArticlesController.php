@@ -39,7 +39,7 @@ class ArticlesController extends Controller
         $guardianApiResponse = ArticlesService::guardianApi();
 
         // Fetch data from New York Times API
-        $nytApiResponse = ArticlesService::nytimesApi();
+        $nytApiResponse = ArticlesService::newsApiSource();
 
         $categoryNames = [];
 
@@ -51,9 +51,9 @@ class ArticlesController extends Controller
         }
 
         // NYTimes API
-        foreach ($nytApiResponse["response"]["docs"] as $doc) {
-            if ($doc["section_name"]) {
-                $categoryNames[] = isset($doc["section_name"]) ?? $doc["section_name"];
+        foreach ($nytApiResponse["sources"] as $doc) {
+            if ($doc["category"]) {
+                $categoryNames[] = $doc["category"];
             }
         }
 

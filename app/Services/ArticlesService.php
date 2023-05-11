@@ -109,7 +109,7 @@ class ArticlesService
                     'category' => $result['sectionName'],
                     'author' => $result['fields']['byline'],
                     'url' => $result['webUrl'],
-                    'urlToImage' => $result['fields'],
+                    'urlToImage' => $result['fields']['thumbnail'],
                     'date' => $result['webPublicationDate'],
                     'source' => 'guardian'
                 ];
