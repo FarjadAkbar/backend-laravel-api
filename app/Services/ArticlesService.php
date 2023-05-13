@@ -21,10 +21,10 @@ class ArticlesService
             'apiKey' => env('NEWS_API_KEY'),
             'country' => 'us',
         ];
-        if ($q !== null) {
+        if ($q !== null && !empty($q)) {
             $params['category'] = implode('|', $q);
         }
-        if ($author !== null) {
+        if ($author !== null && !empty($author)) {
             // $params['sources'] = implode(',', $author);
         }
 
@@ -37,11 +37,11 @@ class ArticlesService
             'api-key' => env('GUARDIAN_API_KEY'),
             'show-fields' => 'byline,trailText,thumbnail',
         ];
-        if ($q !== null) {
+        if ($q !== null && !empty($q)) {
             $params['section'] = implode('|', $q);
         }
-        if ($author !== null) {
-            // $params['byline'] = implode('|', $author);
+        if ($author !== null && !empty($author)) {
+            $params['byline'] = implode('|', $author);
         }
         return Http::get('https://content.guardianapis.com/search', $params)->json();
     }
@@ -51,13 +51,19 @@ class ArticlesService
         $params = [
             'api-key' => env('NYT_API_KEY'),
         ];
-        if ($q !== null) {
+        
+        if ($q !== null && !empty($q)) {
             $q = implode(' OR ', $q);
             $params['fq'] = "section_name:($q)";
         }
-        if ($author !== null) {
+
+        if ($author !== null && !empty($author)) {
             $author = implode(' OR ', $author);
-            $params['fq'] .= " AND byline:($author)";
+            if ($q !== null && !empty($q)) {    
+                $params['fq'] .= " AND byline:($author)";
+            } else{
+                $params['fq'] = " AND byline:($author)";
+            }
         }
 
         return Http::get('https://api.nytimes.com/svc/search/v2/articlesearch.json', $params)->json();
@@ -109,7 +115,7 @@ class ArticlesService
                     'category' => $result['sectionName'],
                     'author' => $result['fields']['byline'],
                     'url' => $result['webUrl'],
-                    'urlToImage' => $result['fields']['thumbnail'],
+                    'urlToImage' => isset($result['fields']['thumbnail']) ? $result['fields']['thumbnail'] : '',
                     'date' => $result['webPublicationDate'],
                     'source' => 'guardian'
                 ];
@@ -118,7 +124,7 @@ class ArticlesService
     
 
         // NYTimes API
-        if ($sources && in_array('nytimes', $sources)) {
+        if ($sources && in_array('nytime', $sources)) {
             $nytApiResponse = self::nytimesApi($categories, $authors);
         } elseif (!$sources && !$categories && !$authors) {
             $nytApiResponse = self::nytimesApi();

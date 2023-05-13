@@ -20,12 +20,25 @@ class ArticelPrefrencesController extends Controller
     {
         $articlePreference = ArticelPrefrences::where('user_id', $id)->first();
 
+        $categories = array_filter($request->categories, function($value) {
+            return !is_null($value) && $value !== "";
+        });
+
+        $authors = array_filter($request->authors, function($value) {
+                    return !is_null($value) && $value !== "";
+                });
+
+        $sources = array_filter($request->sources, function($value) {
+                    return !is_null($value) && $value !== "";
+                });
+
+                
         if (!$articlePreference) {
             $articlePreference = new ArticelPrefrences;
             $articlePreference->user_id = $request->user_id;
-            $articlePreference->categories = json_encode($request->categories);
-            $articlePreference->sources = json_encode($request->sources);
-            $articlePreference->authors = json_encode($request->authors);
+            $articlePreference->categories = json_encode($categories);
+            $articlePreference->sources = json_encode($sources);
+            $articlePreference->authors = json_encode($authors);
 
             $articlePreference->save();
 
@@ -36,9 +49,9 @@ class ArticelPrefrencesController extends Controller
         }
 
         $articlePreference->user_id = $request->user_id;
-        $articlePreference->categories = $request->categories;
-        $articlePreference->sources = $request->sources;
-        $articlePreference->authors = $request->authors;
+        $articlePreference->categories = json_encode($categories);
+        $articlePreference->sources = json_encode($sources);
+        $articlePreference->authors = json_encode($authors);
 
         $articlePreference->save();
 
